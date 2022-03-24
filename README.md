@@ -58,6 +58,11 @@ val speechService = SpeechManager.create(this)
  speechService.start("sentences")
 ```
 
+#### Get File Record
+```kotlin
+ speechService.getFile()
+```
+
 
 ## Acknowledgements
 
