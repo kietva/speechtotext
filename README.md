@@ -53,6 +53,10 @@ val speechService = SpeechManager.create(this)
             }
         })
 ```
+#### Start
+```kotlin
+ speechService.start("sentences")
+```
 
 
 ## Acknowledgements
