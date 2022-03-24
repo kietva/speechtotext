@@ -1,4 +1,4 @@
-package com.min.speechtotext
+package com.min.sample
 
 import android.media.MediaPlayer
 import android.os.Bundle

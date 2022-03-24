@@ -1,4 +1,4 @@
-package com.min.speechtotext
+package com.min.sample
 
 import org.junit.Test
 
