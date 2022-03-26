@@ -21,6 +21,7 @@ class SpeechManager(private val context: Context) : DefaultLifecycleObserver {
 
     var recording : Recording? = null
     var sentenceCurrent : String = ""
+    var isRunning : Boolean = false
 
     companion object Factory {
         fun create(context: Context) : SpeechManager = SpeechManager(context)
@@ -28,11 +29,6 @@ class SpeechManager(private val context: Context) : DefaultLifecycleObserver {
 
     fun setLifecycle(lifecycle : Lifecycle) : SpeechManager{
         lifecycle.addObserver(this)
-        return this
-    }
-
-    fun set(key : String) : SpeechManager{
-        mKey = key
         return this
     }
 
@@ -77,6 +73,7 @@ class SpeechManager(private val context: Context) : DefaultLifecycleObserver {
     fun setVoiceListener(speechListener: SpeechListener){
         mVoiceSearchListener = object : SpeechResultCallback {
             override fun onStartListen() {
+                isRunning = true
                 speechListener.onStart()
                 recording?.startRecording()
             }
@@ -86,16 +83,20 @@ class SpeechManager(private val context: Context) : DefaultLifecycleObserver {
 
             override fun onDecoding() {
                 recording?.stopRecording()
+                mSpeechService.stop()
+                isRunning = false
                 speechListener.onComplete(apiAzure.getResult(recording?.getFilePath() ?: "", sentenceCurrent))
             }
 
             override fun onSTTResult(@Nullable result: STTResult?) {
+                isRunning = false
                 println(result)
             }
 
             override fun onNoVoice() {
                 sentenceCurrent = ""
                 speechListener.onError("onNoVoice")
+                isRunning = false
                 recording?.stopRecording()
                 mSpeechService.stop()
             }
@@ -114,6 +115,9 @@ class SpeechManager(private val context: Context) : DefaultLifecycleObserver {
 
     fun start(sentence : String){
         sentenceCurrent = sentence
+        if (isRunning){
+            mSpeechService.stop()
+        }
         mSpeechService.start(builder.build(), mVoiceSearchListener)
     }
 
