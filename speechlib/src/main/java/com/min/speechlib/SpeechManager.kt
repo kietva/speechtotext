@@ -21,7 +21,6 @@ class SpeechManager(private val context: Context) : DefaultLifecycleObserver {
 
     var recording : Recording? = null
     var sentenceCurrent : String = ""
-    var isRunning : Boolean = false
 
     companion object Factory {
         fun create(context: Context) : SpeechManager = SpeechManager(context)
@@ -73,7 +72,6 @@ class SpeechManager(private val context: Context) : DefaultLifecycleObserver {
     fun setVoiceListener(speechListener: SpeechListener){
         mVoiceSearchListener = object : SpeechResultCallback {
             override fun onStartListen() {
-                isRunning = true
                 speechListener.onStart()
                 recording?.startRecording()
             }
@@ -83,22 +81,19 @@ class SpeechManager(private val context: Context) : DefaultLifecycleObserver {
 
             override fun onDecoding() {
                 recording?.stopRecording()
-                mSpeechService.stop()
-                isRunning = false
                 speechListener.onComplete(apiAzure.getResult(recording?.getFilePath() ?: "", sentenceCurrent))
             }
 
             override fun onSTTResult(@Nullable result: STTResult?) {
-                isRunning = false
+                recording?.stopRecording()
+                speechListener.onComplete("STTResult")
                 println(result)
             }
 
             override fun onNoVoice() {
                 sentenceCurrent = ""
-                speechListener.onError("onNoVoice")
-                isRunning = false
                 recording?.stopRecording()
-                mSpeechService.stop()
+                speechListener.onError("onNoVoice")
             }
 
             override fun onError(
@@ -106,24 +101,20 @@ class SpeechManager(private val context: Context) : DefaultLifecycleObserver {
                 @Nullable error: String?
             ) {
                 sentenceCurrent = ""
-                speechListener.onError("$error")
                 recording?.stopRecording()
-                mSpeechService.stop()
+                speechListener.onError("$error")
             }
         }
     }
 
     fun start(sentence : String){
         sentenceCurrent = sentence
-        if (isRunning){
-            mSpeechService.stop()
-        }
         mSpeechService.start(builder.build(), mVoiceSearchListener)
     }
 
     override fun onStop(owner: LifecycleOwner) {
-        super.onStop(owner)
         recording?.stopRecording()
         mSpeechService.stop()
+        super.onStop(owner)
     }
 }
