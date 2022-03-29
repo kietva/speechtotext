@@ -111,10 +111,14 @@ class SpeechManager(private val context: Context) : DefaultLifecycleObserver {
         sentenceCurrent = sentence
         mSpeechService.start(builder.build(), mVoiceSearchListener)
     }
-
-    override fun onStop(owner: LifecycleOwner) {
+    
+    fun stop() {
         recording?.stopRecording()
         mSpeechService.stop()
+    }
+
+    override fun onStop(owner: LifecycleOwner) {
+        stop()
         super.onStop(owner)
     }
 }
