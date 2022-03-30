@@ -3,6 +3,7 @@ package com.min.speechlib
 import android.annotation.SuppressLint
 import android.content.Context
 import android.media.AudioFormat
+import com.github.squti.androidwaverecorder.RecorderState
 import com.github.squti.androidwaverecorder.WaveRecorder
 import java.io.File
 import java.lang.Exception
@@ -20,8 +21,8 @@ class Recording(private val context: Context) {
         return WaveRecorder(getFilePath()).apply {
             waveConfig.sampleRate = 44100
             waveConfig.channels = AudioFormat.CHANNEL_IN_STEREO
-            waveConfig.audioEncoding = AudioFormat.ENCODING_PCM_8BIT
-            noiseSuppressorActive = true
+            waveConfig.audioEncoding = AudioFormat.ENCODING_PCM_16BIT
+            noiseSuppressorActive = false
         }
     }
 
@@ -44,7 +45,8 @@ class Recording(private val context: Context) {
         try {
             mediaRecorder.startRecording()
         }catch (ex : Exception){
-
+            ex.printStackTrace()
+            println("SpeechManager startRecording error=[${ex.message}]")
         }
     }
 
@@ -52,7 +54,8 @@ class Recording(private val context: Context) {
         try {
             mediaRecorder.stopRecording()
         }catch (ex : Exception){
-
+            ex.printStackTrace()
+            println("SpeechManager stopRecording error=[${ex.message}]")
         }
     }
 }
