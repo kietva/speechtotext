@@ -3,8 +3,7 @@ package com.min.speechlib
 import android.annotation.SuppressLint
 import android.content.Context
 import android.media.AudioFormat
-import com.github.squti.androidwaverecorder.RecorderState
-import com.github.squti.androidwaverecorder.WaveRecorder
+import com.min.speechlib.recording.WaveRecorder
 import java.io.File
 import java.lang.Exception
 
