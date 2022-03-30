@@ -29,6 +29,7 @@ class Recording(private val context: Context) {
     fun setPathFile(path : String, fileName : String){
         folderId = path
         fileId = fileName
+        mediaRecorder.changeFilePath(getFilePath())
     }
 
     fun getFilePath(): String {
